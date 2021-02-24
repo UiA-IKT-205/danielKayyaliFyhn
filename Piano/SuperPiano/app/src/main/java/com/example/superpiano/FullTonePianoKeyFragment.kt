@@ -6,18 +6,17 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.example.superpiano.databinding.FragmentFullTonePianoKeyBinding
 import kotlinx.android.synthetic.main.fragment_full_tone_piano_key.view.*
-
+import com.example.superpiano.databinding.FragmentFullTonePianoKeyBinding
 
 class FullTonePianoKeyFragment : Fragment() {
+
     private var _binding:FragmentFullTonePianoKeyBinding? = null
     private val binding get() = _binding!!
     private lateinit var note:String
 
-
-    var onKeyDown:((nopte:String) -> Unit)? = null
-    var onKeyUp:((note:String) ->Unit)? = null
+    var onKeyDown:((note:String) -> Unit)? = null
+    var onKeyUp:((note:String) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,15 +33,19 @@ class FullTonePianoKeyFragment : Fragment() {
         _binding = FragmentFullTonePianoKeyBinding.inflate(inflater)
         val view = binding.root
 
-        view.fullToneKey.setOnTouchListener(object: View.OnTouchListener {
+        view.fullToneKey.setOnTouchListener(object: View.OnTouchListener{
+
+            var startTime = 0
+
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                when (event?.action) {
+                when(event?.action){
                     MotionEvent.ACTION_DOWN -> this@FullTonePianoKeyFragment.onKeyDown?.invoke(note)
                     MotionEvent.ACTION_UP -> this@FullTonePianoKeyFragment.onKeyUp?.invoke(note)
                 }
                 return true
             }
         })
+
         return view
     }
 

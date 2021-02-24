@@ -10,7 +10,6 @@
     <Button
         android:id="@+id/fullToneKey"
         android:backgroundTint="@color/white"
-        android:text="*"
         android:background="@drawable/pianokeyshape"
         android:layout_width="60dp"
         android:layout_height="match_parent"
