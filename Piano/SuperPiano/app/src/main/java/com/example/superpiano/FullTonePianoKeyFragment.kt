@@ -6,14 +6,15 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_full_tone_piano_key.view.*
 import com.example.superpiano.databinding.FragmentFullTonePianoKeyBinding
+// ToDO: sjekk om denne inkluden trengs eller om det er noe annet gale i koden
+import kotlinx.android.synthetic.main.fragment_full_tone_piano_key.view.*
 
 class FullTonePianoKeyFragment : Fragment() {
-
     private var _binding:FragmentFullTonePianoKeyBinding? = null
     private val binding get() = _binding!!
     private lateinit var note:String
+
 
     var onKeyDown:((note:String) -> Unit)? = null
     var onKeyUp:((note:String) -> Unit)? = null
@@ -21,7 +22,7 @@ class FullTonePianoKeyFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            note = it.getString("NOTE") ?: "?"
+            note = it.getString("NOTE") ?: "?" // if(it..) else "?" | lambda
         }
     }
 
@@ -29,16 +30,13 @@ class FullTonePianoKeyFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentFullTonePianoKeyBinding.inflate(inflater)
         val view = binding.root
 
-        view.fullToneKey.setOnTouchListener(object: View.OnTouchListener{
-
-            var startTime = 0
-
+        view.fullToneKey.setOnTouchListener(object: View.OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
                 when(event?.action){
+
                     MotionEvent.ACTION_DOWN -> this@FullTonePianoKeyFragment.onKeyDown?.invoke(note)
                     MotionEvent.ACTION_UP -> this@FullTonePianoKeyFragment.onKeyUp?.invoke(note)
                 }
@@ -46,7 +44,8 @@ class FullTonePianoKeyFragment : Fragment() {
             }
         })
 
-        return view
+
+        return inflater.inflate(R.layout.fragment_full_tone_piano_key, container, false)
     }
 
     companion object {

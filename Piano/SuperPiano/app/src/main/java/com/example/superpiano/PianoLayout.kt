@@ -5,73 +5,61 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_piano.view.*
-import com.example.superpiano.data.Note
-import com.example.superpiano.databinding.FragmentPianoBinding
-import java.io.File
-import java.io.FileOutputStream
-
+import com.example.superpiano.databinding.FragmentPianoLayoutBinding
+import kotlinx.android.synthetic.main.fragment_piano_layout.view.*
 
 class PianoLayout : Fragment() {
 
-    private var _binding:FragmentPianoBinding? = null
+    private var _binding:FragmentPianoLayoutBinding? = null
     private val binding get() = _binding!!
 
-    private val fullTones = listOf("C","D","E","F","G","A","B","C2","D2","E2","F2","G2")
 
-    private var score:MutableList<Note> = mutableListOf<Note>() // Score == Noteark?
+    private val allTones = listOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+            "C2", "C2#", "D2", "D2#", "E2", "F2", "F2#", "G2")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        _binding = FragmentPianoBinding.inflate(layoutInflater)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentPianoLayoutBinding.inflate(layoutInflater)
         val view = binding.root
 
         val fm = childFragmentManager
         val ft = fm.beginTransaction()
 
-        fullTones.forEach { orgNoteValue ->
-            val fullTonePianoKey = FullTonePianoKeyFragment.newInstance(orgNoteValue)
-            var startPlay:Long = 0
+        allTones.forEach(){
+            val fullTonePianoKey = FullTonePianoKeyFragment.newInstance(it)
 
-            fullTonePianoKey.onKeyDown =  { note ->
-                startPlay = System.nanoTime()
-                println("Piano key down $note")
+
+            val pattern = ".*#".toRegex()
+
+            if(pattern.containsMatchIn(it)){
+                fullTonePianoKey.onKeyDown = {
+                    println("Piano key down $it")
+                }
+
+                fullTonePianoKey.onKeyUp = {
+                    println("Piano key up $it")
+                }
+                ft.add(view.pianoKeys.id, fullTonePianoKey, "note_$it")
+
+            } else {
+                fullTonePianoKey.onKeyDown = {
+                    println("Piano key down $it")
+                }
+
+                fullTonePianoKey.onKeyUp = {
+                    println("Piano key up $it")
+                }
+                ft.add(view.pianoKeys.id,fullTonePianoKey,"note_$it")
             }
-
-            fullTonePianoKey.onKeyUp = {
-                var endPlay = System.nanoTime()
-                val note = Note(it, startPlay,endPlay)
-                score.add(note)
-                println("Piano key up $note")
-            }
-
-            ft.add(view.pianoKeys.id,fullTonePianoKey,"note_$orgNoteValue")
         }
 
         ft.commit()
 
-
-        view.saveScoreBt.setOnClickListener {
-            var fileName = view.fileNameTextEdit.text.toString()
-            val path = this.activity?.getExternalFilesDir(null)
-            if (score.count() > 0 && fileName.isNotEmpty() && path != null){
-                fileName = "$fileName.musikk"
-                FileOutputStream(File(path,fileName),true).bufferedWriter().use { writer ->
-                    // bufferdWriter lever her
-                    score.forEach {
-                        writer.write("${it.toString()}\n")
-                    }
-                }
-            } else {
-                /// TODO: What to do?
-            }
-        }
-
         return view
     }
-
 }
